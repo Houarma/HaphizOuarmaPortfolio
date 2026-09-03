@@ -1,0 +1,627 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surfaces — the mockup's near-white page with slightly lighter cards. */
+  --color-page: #f1f1f1;
+  --color-card: #fcfcfc;
+  --color-chip: #ffffff;
+
+  /* Ink */
+  --color-ink: #0b0b0b;
+  --color-ink-soft: #2c2c2c;
+  --color-grey: #8b8b8b;
+  --color-faint: #bfbfbf;
+  --color-line: rgba(11, 11, 11, 0.07);
+
+  /* The single accent. Deep blue where the reference used orange. */
+  --color-accent: #132e6b;
+  --color-accent-strong: #1c3f8f;
+  --color-accent-wash: #e8ecf6;
+  --color-live: #22c55e;
+  --color-night: #161616;
+
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+
+  --radius-card: 22px;
+  --radius-tile: 16px;
+
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04),
+    0 14px 30px -18px rgba(16, 24, 40, 0.22);
+  --shadow-chip: 0 1px 3px rgba(16, 24, 40, 0.1);
+  --shadow-lift: 0 10px 28px -12px rgba(16, 24, 40, 0.3);
+  --shadow-avatar: 0 10px 26px -10px rgba(16, 24, 40, 0.45);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@layer components {
+  /* --- Primitives shared by every card in the layout ----------------------- */
+
+  .card {
+    position: relative;
+    border-radius: var(--radius-card);
+    background-color: var(--color-card);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-card);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    background-color: var(--color-chip);
+    box-shadow: var(--shadow-chip);
+    padding: 0.35rem 0.8rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+
+  /* A plotting grid behind the first screen. It is anchored to the top-left
+     corner of the page and dies out diagonally as it reaches the cards, so it
+     never reads as a band that stops. */
+  .grid-backdrop {
+    --grid-cell: 56px;
+    --grid-line: rgba(19, 46, 107, 0.09);
+    overflow: hidden;
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: var(--grid-cell) var(--grid-cell);
+    background-position: 0 0;
+    -webkit-mask-image: radial-gradient(
+      1500px 1060px at -80px -80px,
+      #000 0%,
+      #000 20%,
+      rgba(0, 0, 0, 0.5) 48%,
+      transparent 82%
+    );
+    mask-image: radial-gradient(
+      1500px 1060px at -80px -80px,
+      #000 0%,
+      #000 20%,
+      rgba(0, 0, 0, 0.5) 48%,
+      transparent 82%
+    );
+  }
+
+  /* A few cells filled in, the way a designer would mark a grid. */
+  .grid-cell {
+    position: absolute;
+    width: var(--grid-cell);
+    height: var(--grid-cell);
+    background-color: rgba(19, 46, 107, 0.06);
+  }
+  /* Liquid glass: the contact panel sits on the cloud plate and lets it
+     through, blurred and slightly brightened. */
+  /* The footer band: near-black with the same plotting grid as the first
+     screen, only inverted. */
+  .night-grid {
+    position: relative;
+    background-color: var(--color-night);
+  }
+
+  .night-grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 96px 96px;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 0%,
+      #000 13%,
+      transparent 31%,
+      transparent 69%,
+      #000 87%,
+      #000 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      #000 0%,
+      #000 13%,
+      transparent 31%,
+      transparent 69%,
+      #000 87%,
+      #000 100%
+    );
+  }
+
+  /* The ground under The work: a night sky and a grid that tile past the
+     edges of the artwork, whatever the viewport. */
+  .work-sky {
+    background-color: #07142e;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(160deg, #0a1a3d 0%, #0d2350 55%, #07142e 100%);
+    background-size: 60px 60px, 60px 60px, 100% 100%;
+  }
+
+  /* The products take turns: each slide holds for about seven seconds,
+     then hands over with a short cross-fade. */
+  /* The rail: the running track fills once, over the slide's hold. */
+  @keyframes showcase-rail-run {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .showcase-rail-run {
+    transform-origin: left;
+    animation: showcase-rail-run 6s linear both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .showcase-rail-run {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .showcase-slide {
+      animation: none;
+    }
+    .showcase-slide:first-child {
+      opacity: 1;
+    }
+  }
+
+  /* One turn of the globe: the texture is twice the window's width, so
+     sliding it by its own width is exactly one revolution. */
+  @keyframes globe-spin {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .globe-window {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+      0 0 0.4em rgba(96, 165, 250, 0.4);
+  }
+
+  .globe-strip {
+    position: absolute;
+    inset: 0;
+    width: 400%;
+    background-image: url("/media/earth.webp");
+    background-size: 50% 100%;
+    background-repeat: repeat-x;
+    animation: globe-spin 26s linear infinite;
+  }
+
+  /* Specular highlight, terminator and a thin atmosphere on the lit limb. */
+  .globe-shade {
+    background:
+      radial-gradient(
+        circle at 30% 26%,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.14) 24%,
+        transparent 48%
+      ),
+      radial-gradient(
+        circle at 74% 78%,
+        rgba(0, 4, 16, 0.82) 0%,
+        rgba(0, 4, 16, 0.36) 42%,
+        transparent 72%
+      );
+    box-shadow:
+      inset 0.05em 0.05em 0.12em rgba(198, 228, 255, 0.5),
+      inset -0.05em -0.05em 0.2em rgba(0, 0, 12, 0.55);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .globe-strip {
+      animation: none;
+    }
+  }
+
+  /* --- The Africa plate -------------------------------------------------- */
+
+  @keyframes africa-ping {
+    0% {
+      transform: scale(0.5);
+      opacity: 0.6;
+    }
+    70% {
+      opacity: 0;
+    }
+    100% {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+
+  @keyframes africa-flow {
+    to {
+      stroke-dashoffset: -186;
+    }
+  }
+
+  @keyframes africa-sheen {
+    0% {
+      transform: translateX(-45%);
+    }
+    100% {
+      transform: translateX(145%);
+    }
+  }
+
+  .africa-sheen {
+    animation: africa-sheen 11s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .africa-sheen {
+      animation: none;
+    }
+  }
+
+  /* The sky emerges from the page instead of starting on a hard line. */
+  .sky-fade {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 140px,
+      #000 calc(100% - 110px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 140px,
+      #000 calc(100% - 110px),
+      transparent 100%
+    );
+  }
+
+  /* Liquid glass on the light page: frosted white rather than tinted dark. */
+  /* A list that runs continuously fades at both ends. */
+  .fade-y {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 34px,
+      #000 calc(100% - 26px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 34px,
+      #000 calc(100% - 26px),
+      transparent 100%
+    );
+  }
+
+  /* The portrait's own alpha masks its sheen, so the light only ever crosses
+     the silhouette. Keep in step with aboutMe.portrait. */
+  .portrait-sheen {
+    -webkit-mask-image: url("/media/portrait.webp");
+    mask-image: url("/media/portrait.webp");
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .glass-light {
+    background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(255, 255, 255, 0.54)
+    );
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+      0 30px 70px -40px rgba(16, 24, 40, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  .glass {
+    background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.22),
+      rgba(255, 255, 255, 0.08)
+    );
+    backdrop-filter: blur(13px) saturate(140%) brightness(1.04);
+    -webkit-backdrop-filter: blur(13px) saturate(140%) brightness(1.04);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow:
+      0 24px 64px -34px rgba(20, 28, 45, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  /* The portrait melts into the page instead of ending on a hard edge. */
+  .portrait-fade {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 70%, transparent 99%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 70%, transparent 99%);
+  }
+
+  /* The experience list fades out under its own label, as in the reference. */
+  .fade-top {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      rgba(0, 0, 0, 0.18) 26px,
+      #000 82px
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      rgba(0, 0, 0, 0.18) 26px,
+      #000 82px
+    );
+  }
+}
+
+/* --- The one figure on the page ----------------------------------------- */
+
+@keyframes interval-in {
+  from {
+    transform: scaleX(0.04);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.interval-bar {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: interval-in 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes dot-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.interval-dot {
+  animation: dot-in 400ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .interval-bar,
+  .interval-dot {
+    animation: none;
+  }
+}
+
+/* The first screen is animated in; hold it back until GSAP takes over. */
+.anim [data-anim="topbar"],
+.anim [data-anim="hero-title"],
+.anim [data-anim="hero-cta"] > * {
+  opacity: 0;
+}
+
+/* --- Article body ---------------------------------------------------------
+   The reading surface for /writing. Measure, rhythm and colour follow the
+   rest of the site; the code blocks arrive already coloured by Shiki. */
+.prose {
+  max-width: 46rem;
+  font-size: 16.5px;
+  line-height: 1.72;
+  color: var(--color-ink-soft);
+}
+
+.prose > * + * {
+  margin-top: 1.35em;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--color-ink);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  scroll-margin-top: 2.5rem;
+}
+
+.prose h2 {
+  margin-top: 2.6em;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.prose h3 {
+  margin-top: 2.1em;
+  font-size: 1.18rem;
+  line-height: 1.35;
+}
+
+.prose h2 + *,
+.prose h3 + * {
+  margin-top: 0.9em;
+}
+
+.prose .heading-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.prose .heading-anchor:hover {
+  color: var(--color-accent);
+}
+
+.prose a:not(.heading-anchor) {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.prose strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.35em;
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li + li {
+  margin-top: 0.5em;
+}
+
+.prose li::marker {
+  color: var(--color-grey);
+}
+
+.prose blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1.1em;
+  color: var(--color-grey);
+  font-style: italic;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  margin: 2.6em 0;
+}
+
+.prose img {
+  border-radius: 14px;
+  width: 100%;
+}
+
+.prose figcaption {
+  margin-top: 0.7em;
+  font-size: 13px;
+  color: var(--color-grey);
+}
+
+/* inline code */
+.prose :not(pre) > code {
+  background: var(--color-ink-wash, rgba(11, 11, 11, 0.055));
+  border-radius: 5px;
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.87em;
+}
+
+/* Shiki output */
+.prose pre {
+  border-radius: 14px;
+  padding: 1.15rem 1.25rem;
+  overflow-x: auto;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.prose pre code {
+  display: grid;
+  font-family: var(--font-mono);
+}
+
+.prose [data-line] {
+  padding: 0 0.2rem;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  display: block;
+  overflow-x: auto;
+}
+
+.prose th,
+.prose td {
+  border-bottom: 1px solid var(--color-line);
+  padding: 0.6em 0.8em;
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose th {
+  color: var(--color-ink);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* footnotes */
+.prose .footnotes {
+  margin-top: 3em;
+  border-top: 1px solid var(--color-line);
+  padding-top: 1.4em;
+  font-size: 14px;
+  color: var(--color-grey);
+}
+
+.prose .footnotes h2 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--color-grey);
+  margin-top: 0;
+}
+
+.prose sup a {
+  text-decoration: none;
+  font-size: 0.78em;
+  padding: 0 0.15em;
+}
+
+/* KaTeX: let a long display equation scroll instead of breaking the column */
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.4em 0;
+}
