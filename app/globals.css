@@ -625,3 +625,69 @@ body {
   overflow-y: hidden;
   padding: 0.4em 0;
 }
+
+/* --- Code blocks: the bar the reference carries above each one ------------ */
+.prose .code-figure {
+  margin-top: 1.6em;
+  margin-bottom: 1.6em;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #22272e;
+}
+
+.prose .code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.prose .code-lang {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.prose .code-copy {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.5);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.prose .code-copy:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+
+/* A word replaces the icon for a moment after a copy. */
+.prose .code-copy[data-state="copied"] svg {
+  display: none;
+}
+
+.prose .code-copy[data-state="copied"] {
+  width: auto;
+  padding: 0 8px;
+}
+
+.prose .code-copy[data-state="copied"]::after {
+  content: "Copied";
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: #7ee2a8;
+}
+
+/* The figure owns the frame now, so the pre inside gives up its own. */
+.prose .code-figure pre {
+  margin: 0;
+  border-radius: 0;
+  border: 0;
+}
