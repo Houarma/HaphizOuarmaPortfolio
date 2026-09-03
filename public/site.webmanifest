@@ -1,0 +1,13 @@
+{
+  "name": "Haphiz Ouarma — AI & Data Engineer, Founder of Horizon's",
+  "short_name": "Haphiz Ouarma",
+  "description": "AI and data engineer, founder of Horizon's. I build software for African markets and study controlled experiments, causal inference and machine learning.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f1f1f1",
+  "theme_color": "#132e6b",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

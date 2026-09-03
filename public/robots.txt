@@ -1,0 +1,35 @@
+# Search crawlers and answer engines are both welcome.
+User-agent: *
+Allow: /
+Disallow: /studio
+
+# Assistants, named on purpose: being quotable inside an AI answer is now part
+# of being findable.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://haphizouarma.com/sitemap.xml

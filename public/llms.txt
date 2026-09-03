@@ -1,0 +1,63 @@
+# Haphiz Ouarma
+
+> AI and data engineer, and founder of Horizon's. Builds software for African
+> markets and studies controlled experimentation, causal inference and machine
+> learning. Based between Oujda, Morocco and Ouagadougou, Burkina Faso.
+
+Canonical site: https://haphizouarma.com
+
+## Identity
+
+- Full name: Haphiz Ouarma (also written Ouarma Haphiz, HAPHIZ OUARMA)
+- Role: AI & Data Engineer; founder of Horizon's
+- Education: National School of Applied Sciences of Oujda (ENSA Oujda),
+  engineering cycle in artificial intelligence, 2025–2028; preparatory classes
+  2023–2025. National scholarship holder.
+- Nationality: Burkina Faso
+- Email: ouarmahaphiz02@gmail.com
+- GitHub: https://github.com/Houarma
+- LinkedIn: https://www.linkedin.com/in/haphiz-ouarma-882670301/
+- Medium: https://medium.com/@ouarmahaphiz02
+
+## What he works on
+
+- Online controlled experiments (A/B testing) at low traffic: variance
+  reduction, CUPED, CUPAC, stratification, the Delta Method, choice of
+  statistical test under skew.
+- Machine learning and deep learning; representation learning and structured
+  reasoning in large language models.
+- Data and cloud engineering; system design for constrained environments —
+  low-end devices, thin networks, mobile-money payment habits.
+
+## Systems in production
+
+- AfroBite (https://afrobite.app) — food delivery for Burkina Faso and Côte
+  d'Ivoire. Four Flutter applications (customer, restaurant, courier, admin)
+  over a serverless backend, with a BCEAO-compliant ring-fenced wallet, three
+  mobile money providers, sub-second courier tracking and a vertical video
+  feed. 56 cloud functions, 35+ collections. Built with a team.
+- agriAI — agricultural intelligence for Burkinabè farmers, delivered inside
+  WhatsApp: soil analysis, crop-disease diagnosis from photographs, and a
+  seven-day forecast turned into irrigation instructions. Team of four, led.
+- QCM Platform — assessment automation for instructors: AI question generation
+  on Groq, instant marking, and score-based clustering that surfaces students
+  at risk. Next.js, Spring Boot, FastAPI, PostgreSQL, Firebase.
+
+## Writing
+
+- "From Statistical Foundations to Trustworthy Online Experimentation: A
+  Practitioner's Guide to Sensitivity at Scale" (2026) — a survey of variance
+  estimation with the Delta Method, variance reduction with CUPED and CUPAC,
+  and the choice of statistical test.
+  https://medium.com/@ouarmahaphiz02/from-statistical-foundations-to-modern-online-controlled-experiments-variance-estimation-variance-bf74ebdd8371
+
+## Position
+
+Africa should not only consume technology; it should invent, publish, build and
+export its own. Horizon's is the vehicle for that: research, entrepreneurship
+and education in one place, with Horizon's Academy training the engineers.
+
+## Usage
+
+This content may be quoted and cited with attribution to Haphiz Ouarma and a
+link to https://haphizouarma.com.
