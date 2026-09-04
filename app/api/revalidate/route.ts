@@ -38,6 +38,7 @@ export async function POST(request: Request) {
 
   const { slug } = (await request.json()) as { slug?: string };
 
+  revalidatePath("/");
   revalidatePath("/writing");
   revalidatePath("/sitemap.xml");
   if (slug) revalidatePath(`/writing/${slug}`);

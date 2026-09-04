@@ -36,6 +36,12 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* Several ornaments are drawn wider than the column on purpose — the map,
+     the footer's wave, the ring around the contact lamp. `clip` on the root
+     propagates to the viewport, so none of them can open a sideways scroll on
+     a phone; unlike `hidden` it does not turn anything into a scroll
+     container, so sticky positioning keeps working. */
+  overflow-x: clip;
 }
 
 body {
@@ -461,7 +467,8 @@ body {
   color: var(--color-ink);
   font-weight: 700;
   letter-spacing: -0.025em;
-  scroll-margin-top: 2.5rem;
+  /* Lands the heading at the reading line, where the rail marks it read. */
+  scroll-margin-top: 5rem;
 }
 
 .prose h2 {

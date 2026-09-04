@@ -57,10 +57,10 @@ function PieceList() {
   const live = rows?.filter((r) => r.status === "published").length ?? 0;
 
   return (
-    <main className="mx-auto w-full max-w-[1000px] px-5 py-12 sm:px-8">
+    <main className="mx-auto w-full max-w-[1000px] px-4 py-8 sm:px-8 sm:py-12">
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
-          <h1 className="text-[32px] font-bold tracking-[-0.038em]">Pieces</h1>
+          <h1 className="text-[26px] font-bold tracking-[-0.038em] sm:text-[32px]">Pieces</h1>
           <p className="mt-1.5 text-[13.5px] text-grey">
             {live} published · {drafts} in draft
           </p>
@@ -79,7 +79,7 @@ function PieceList() {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Filter by title or slug"
-          className="mt-8 w-full rounded-[10px] border border-line bg-card px-4 py-2.5 text-[13.5px] outline-none focus:border-ink/30 sm:max-w-[320px]"
+          className="mt-8 w-full rounded-[10px] border border-line bg-card px-4 py-2.5 text-[16px] outline-none focus:border-ink/30 sm:max-w-[320px] sm:text-[13.5px]"
         />
       ) : null}
 
@@ -93,7 +93,7 @@ function PieceList() {
         <ul className="mt-9 border-t border-line">
           {shown.map((row) => (
             <li key={row.id} className="border-b border-line">
-              <div className="flex items-center gap-4 py-4">
+              <div className="flex items-center gap-3 py-4 sm:gap-4">
                 <Link href={`/studio/${row.id}`} className="min-w-0 flex-1">
                   <p className="truncate text-[16px] font-semibold tracking-[-0.02em]">
                     {row.title || "Untitled"}

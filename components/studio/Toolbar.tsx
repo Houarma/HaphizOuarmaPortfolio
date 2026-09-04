@@ -149,10 +149,12 @@ export default function Toolbar({
   disabled?: boolean;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-0.5 border-b border-line px-2 py-1.5">
+    // Sixteen tools will not fit across a phone, and wrapping them costs three
+    // rows of the writing surface — so below sm the strip scrolls sideways.
+    <div className="flex items-center gap-0.5 overflow-x-auto border-b border-line px-2 py-1.5 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] sm:flex-wrap sm:overflow-x-visible [&::-webkit-scrollbar]:hidden">
       {TOOLS.map((tool, i) =>
         tool === "gap" ? (
-          <span key={`gap-${i}`} className="mx-1.5 h-4 w-px bg-line" />
+          <span key={`gap-${i}`} className="mx-1.5 h-4 w-px shrink-0 bg-line" />
         ) : (
           <button
             key={tool.label}
@@ -163,7 +165,7 @@ export default function Toolbar({
             onClick={() =>
               tool.action === "image" ? onImage() : onInsert(tool.action)
             }
-            className="grid h-8 w-8 place-items-center rounded-[7px] text-ink-soft transition-colors hover:bg-ink/[0.06] hover:text-ink disabled:opacity-40"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-[7px] text-ink-soft transition-colors hover:bg-ink/[0.06] hover:text-ink disabled:opacity-40 sm:h-8 sm:w-8"
           >
             {tool.icon}
           </button>

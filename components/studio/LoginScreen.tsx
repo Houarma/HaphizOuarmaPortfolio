@@ -144,7 +144,7 @@ export default function LoginScreen() {
               autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1.5 h-[38px] rounded-[8px] border border-line bg-white px-3 text-[13px] outline-none transition-colors focus:border-ink/40"
+              className="mt-1.5 h-[42px] sm:h-[38px] rounded-[8px] border border-line bg-white px-3 text-[16px] sm:text-[13px] outline-none transition-colors focus:border-ink/40"
             />
 
             <label
@@ -162,7 +162,7 @@ export default function LoginScreen() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={Boolean(error)}
-                className={`h-[38px] w-full rounded-[8px] border bg-white px-3 pr-10 text-[13px] outline-none transition-colors focus:border-ink/40 ${
+                className={`h-[42px] sm:h-[38px] w-full rounded-[8px] border bg-white px-3 pr-10 text-[16px] sm:text-[13px] outline-none transition-colors focus:border-ink/40 ${
                   error ? "border-[#d64550]" : "border-line"
                 }`}
               />

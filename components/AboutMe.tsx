@@ -12,7 +12,10 @@ export default function AboutMe() {
             {aboutMe.label}
           </p>
 
-          <span className="relative mt-6 block w-full max-w-[240px] md:mt-8 md:-ml-6 md:w-[336px] md:max-w-none">
+          {/* On a phone it centres and takes the width it deserves; from md it
+              returns to the rail and bleeds left by 24px, as before. The bleed
+              is a transform so it cannot fight the auto margins. */}
+          <span className="relative mx-auto mt-6 block w-full max-w-[320px] md:mt-8 md:w-[336px] md:max-w-none md:-translate-x-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={aboutMe.portrait}

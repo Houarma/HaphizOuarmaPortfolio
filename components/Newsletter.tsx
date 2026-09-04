@@ -43,7 +43,7 @@ export default function Newsletter() {
             type="email"
             required
             placeholder={newsletter.placeholder}
-            className="h-[46px] w-full rounded-[10px] bg-white/[0.14] px-4 text-[14px] text-white ring-1 ring-white/20 outline-none placeholder:text-white/50 focus:ring-white/50 sm:max-w-[320px]"
+            className="h-[46px] w-full rounded-[10px] bg-white/[0.14] px-4 text-[16px] sm:text-[14px] text-white ring-1 ring-white/20 outline-none placeholder:text-white/50 focus:ring-white/50 sm:max-w-[320px]"
           />
           <button
             type="submit"

@@ -206,7 +206,7 @@ export default function Comments({ slug }: { slug: string }) {
                     onChange={(e) => setBody(e.target.value.slice(0, LIMIT))}
                     rows={3}
                     placeholder="Add to the discussion — a correction is as welcome as praise."
-                    className="w-full resize-y rounded-[12px] border border-line bg-card p-3.5 text-[14.5px] leading-relaxed outline-none transition-colors focus:border-ink/30"
+                    className="w-full resize-y rounded-[12px] border border-line bg-card p-3.5 text-[16px] leading-relaxed sm:text-[14.5px] outline-none transition-colors focus:border-ink/30"
                   />
                   <div className="mt-2.5 flex flex-wrap items-center justify-between gap-3">
                     <p className="text-[12px] text-grey">

@@ -5,7 +5,8 @@ import "katex/dist/katex.min.css";
 import { getPostBySlug, getPublishedPosts } from "@/lib/posts";
 import { renderMarkdown } from "@/lib/markdown";
 import { identity, site } from "@/content/site";
-import Toc from "@/components/article/Toc";
+import Toc, { TocCompact } from "@/components/article/Toc";
+import ReadingBar from "@/components/article/ReadingBar";
 import ShareCard from "@/components/article/ShareCard";
 import CodeCopy from "@/components/article/CodeCopy";
 import Comments from "@/components/article/Comments";
@@ -124,10 +125,11 @@ export default async function Article({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
       />
       <CodeCopy />
+      <ReadingBar />
 
-      <div className="grid gap-x-12 lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[14rem_minmax(0,1fr)_15rem]">
+      <div className="grid gap-x-10 lg:grid-cols-[13rem_minmax(0,1fr)] xl:grid-cols-[14rem_minmax(0,1fr)_15rem] xl:gap-x-12">
         {/* ---------- header, sitting in the reading column ---------- */}
-        <header className="lg:col-start-2">
+        <header className="min-w-0 lg:col-start-2">
           <nav
             aria-label="Breadcrumb"
             className="flex flex-wrap items-center gap-1.5 text-[12.5px] text-grey"
@@ -210,8 +212,17 @@ export default async function Article({
         </aside>
 
         {/* ---------- the piece ---------- */}
-        <div className="lg:col-start-2 lg:row-start-2">
-          <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+        <div className="min-w-0 lg:col-start-2 lg:row-start-2">
+          {/* Below lg there is no room for the rail, so the map folds up here. */}
+          <TocCompact headings={headings} />
+
+          {/* The bar and the rail both measure this element, and nothing past
+              it: the comments are not reading. */}
+          <div
+            id="piece"
+            className="prose"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
 
           {post.tags.length ? (
             <p className="mt-14 text-[13.5px] text-grey">
@@ -234,6 +245,12 @@ export default async function Article({
               .
             </p>
           ) : null}
+
+          {/* The share card has no column of its own until xl; before that it
+              belongs at the end of the read, which is when it is asked for. */}
+          <div className="mt-12 xl:hidden">
+            <ShareCard />
+          </div>
 
           <Ornament />
 

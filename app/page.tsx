@@ -10,6 +10,10 @@ import SiteFooter from "@/components/SiteFooter";
 import Motion from "@/components/Motion";
 import { Contact } from "@/components/Closing";
 
+// The research section now reads from Firestore, so the home page rebuilds on
+// the same hourly window as /writing — and immediately when a piece publishes.
+export const revalidate = 3600;
+
 export default function Page() {
   return (
     <>

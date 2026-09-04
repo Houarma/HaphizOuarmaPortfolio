@@ -70,6 +70,9 @@ export default function Editor({ id, user }: { id: string; user: User }) {
   const [dirty, setDirty] = useState(false);
   const [note, setNote] = useState("");
   const [dropping, setDropping] = useState(false);
+  // Below xl the rail sits under the writing surface; folded away, it keeps
+  // the page short enough to thumb through on a phone.
+  const [railOpen, setRailOpen] = useState(false);
 
   const area = useRef<HTMLTextAreaElement>(null);
   const picker = useRef<HTMLInputElement>(null);
@@ -302,16 +305,19 @@ export default function Editor({ id, user }: { id: string; user: User }) {
     <div className="flex min-h-screen flex-col">
       {/* ---------- top bar ---------- */}
       <header className="sticky top-0 z-30 border-b border-line bg-page/85 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-[1500px] flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3 sm:px-7">
+        {/* One row that survives a 360px screen: the counters drop to a line of
+            their own below sm rather than wrapping the controls apart. */}
+        <div className="mx-auto flex w-full max-w-[1500px] items-center gap-2.5 px-4 py-2.5 sm:gap-4 sm:px-7 sm:py-3">
           <Link
             href="/studio"
-            className="text-[13px] text-grey transition-colors hover:text-ink"
+            aria-label="Back to pieces"
+            className="shrink-0 text-[13px] text-grey transition-colors hover:text-ink"
           >
-            ← Pieces
+            ←<span className="hidden sm:inline"> Pieces</span>
           </Link>
 
           <span
-            className={`rounded-full px-2.5 py-[3px] text-[10.5px] font-medium uppercase tracking-[0.1em] ${
+            className={`shrink-0 rounded-full px-2.5 py-[3px] text-[10.5px] font-medium uppercase tracking-[0.1em] ${
               draft.status === "published"
                 ? "bg-live/15 text-[#166534]"
                 : "bg-ink/[0.07] text-grey"
@@ -320,21 +326,24 @@ export default function Editor({ id, user }: { id: string; user: User }) {
             {draft.status}
           </span>
 
-          <span className="font-mono text-[11px] text-grey">
+          <span className="hidden font-mono text-[11px] text-grey sm:inline">
             {count} words · {minutes} min
           </span>
 
-          <span className="font-mono text-[11px] text-grey">{saveLabel}</span>
+          <span className="hidden font-mono text-[11px] text-grey sm:inline">
+            {saveLabel}
+          </span>
 
-          <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
             <div className="flex rounded-full bg-ink/[0.06] p-[3px]">
               {(["write", "split", "read"] as View[]).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setView(mode)}
-                  className={`rounded-full px-3 py-[5px] text-[12px] font-medium capitalize transition-colors ${
-                    view === mode ? "bg-white text-ink shadow-chip" : "text-grey"
-                  }`}
+                  // Two panes side by side need width that a phone has not.
+                  className={`rounded-full px-2.5 py-[5px] text-[11.5px] font-medium capitalize transition-colors sm:px-3 sm:text-[12px] ${
+                    mode === "split" ? "hidden lg:block" : ""
+                  } ${view === mode ? "bg-white text-ink shadow-chip" : "text-grey"}`}
                 >
                   {mode}
                 </button>
@@ -344,30 +353,37 @@ export default function Editor({ id, user }: { id: string; user: User }) {
             <button
               onClick={() => persist("draft")}
               disabled={saving || !draft.title.trim()}
-              className="rounded-full border border-line px-4 py-[7px] text-[12.5px] disabled:opacity-40"
+              className="rounded-full border border-line px-3 py-[7px] text-[12.5px] disabled:opacity-40 sm:px-4"
             >
-              Save draft
+              Save<span className="hidden sm:inline"> draft</span>
             </button>
 
             <button
               onClick={() => persist("published")}
               disabled={saving || !draft.title.trim() || !draft.body.trim()}
-              className="rounded-full bg-ink px-5 py-[7px] text-[12.5px] font-semibold text-white disabled:opacity-40"
+              className="rounded-full bg-ink px-3.5 py-[7px] text-[12.5px] font-semibold text-white disabled:opacity-40 sm:px-5"
             >
               {draft.status === "published" ? "Update" : "Publish"}
             </button>
           </div>
         </div>
 
+        <div className="mx-auto flex max-w-[1500px] items-center gap-3 px-4 pb-2 font-mono text-[11px] text-grey sm:hidden">
+          <span>
+            {count} words · {minutes} min
+          </span>
+          <span className="truncate">{saveLabel}</span>
+        </div>
+
         {note ? (
-          <p className="mx-auto max-w-[1500px] px-5 pb-2 text-[12px] text-grey sm:px-7">
+          <p className="mx-auto max-w-[1500px] px-4 pb-2 text-[12px] text-grey sm:px-7">
             {note}
           </p>
         ) : null}
       </header>
 
       {/* ---------- desk ---------- */}
-      <div className="mx-auto grid w-full max-w-[1500px] flex-1 gap-8 px-5 py-8 sm:px-7 xl:grid-cols-[minmax(0,1fr)_17rem]">
+      <div className="mx-auto grid w-full max-w-[1500px] flex-1 gap-6 px-4 py-6 sm:px-7 sm:py-8 xl:grid-cols-[minmax(0,1fr)_17rem] xl:gap-8">
         <div className="min-w-0">
           <input
             value={draft.title}
@@ -376,15 +392,17 @@ export default function Editor({ id, user }: { id: string; user: User }) {
               if (isNew && !draft.slug) set("slug", slugify(e.target.value));
             }}
             placeholder="Title"
-            className="w-full bg-transparent text-[clamp(1.6rem,3vw,2.2rem)] font-bold tracking-[-0.035em] outline-none placeholder:text-ink/20"
+            className="w-full bg-transparent text-[clamp(1.5rem,5.5vw,2.2rem)] font-bold tracking-[-0.035em] outline-none placeholder:text-ink/20"
           />
 
+          {/* 16px on a phone: below that, iOS zooms the page on focus and the
+              writing surface is never the same again. */}
           <textarea
             value={draft.excerpt}
             onChange={(e) => set("excerpt", e.target.value)}
             placeholder="One or two sentences. This becomes the meta description, the card blurb and the line under the title."
-            rows={2}
-            className="mt-3 w-full resize-none bg-transparent text-[15px] leading-relaxed text-grey outline-none placeholder:text-ink/20"
+            rows={3}
+            className="mt-3 w-full resize-none bg-transparent text-[16px] leading-relaxed text-grey outline-none placeholder:text-ink/20 sm:text-[15px]"
           />
 
           <div
@@ -422,13 +440,13 @@ export default function Editor({ id, user }: { id: string; user: User }) {
                   value={draft.body}
                   onChange={(e) => set("body", e.target.value)}
                   placeholder="Write in Markdown. Tables, footnotes, $\LaTeX$ and fenced code all work — drop an image anywhere to upload it."
-                  className="min-h-[62vh] w-full resize-y bg-transparent p-6 font-mono text-[13.5px] leading-[1.75] outline-none placeholder:text-ink/25"
+                  className="min-h-[58vh] w-full resize-y bg-transparent p-4 font-mono text-[16px] leading-[1.7] outline-none placeholder:text-ink/25 sm:min-h-[62vh] sm:p-6 sm:text-[13.5px] sm:leading-[1.75]"
                 />
               ) : null}
 
               {view !== "write" ? (
                 <div
-                  className="prose min-h-[62vh] max-w-none p-6"
+                  className="prose min-h-[40vh] max-w-none p-4 sm:min-h-[62vh] sm:p-6"
                   dangerouslySetInnerHTML={{ __html: preview }}
                 />
               ) : null}
@@ -449,12 +467,42 @@ export default function Editor({ id, user }: { id: string; user: User }) {
         </div>
 
         {/* ---------- the rail ---------- */}
-        <aside className="flex flex-col gap-5 text-[13px]">
+        <aside className="text-[13px]">
+          <button
+            type="button"
+            onClick={() => setRailOpen((v) => !v)}
+            aria-expanded={railOpen}
+            className="flex w-full items-center justify-between rounded-[12px] border border-line bg-card px-4 py-3 xl:hidden"
+          >
+            <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-grey">
+              Piece settings
+            </span>
+            <svg
+              viewBox="0 0 24 24"
+              className={`h-[16px] w-[16px] text-grey transition-transform duration-300 ${
+                railOpen ? "rotate-180" : ""
+              }`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+
+          <div
+            className={`flex-col gap-5 pt-4 xl:flex xl:pt-0 ${
+              railOpen ? "flex" : "hidden"
+            }`}
+          >
           <Field label="Slug">
             <input
               value={draft.slug}
               onChange={(e) => set("slug", slugify(e.target.value))}
-              className="w-full rounded-[9px] border border-line bg-card px-3 py-2 font-mono text-[12.5px] outline-none focus:border-ink/30"
+              className="w-full rounded-[9px] border border-line bg-card px-3 py-2 font-mono text-[16px] xl:text-[12.5px] outline-none focus:border-ink/30"
             />
             <p className="mt-1.5 truncate font-mono text-[11px] text-grey">
               /writing/{draft.slug || "…"}
@@ -466,7 +514,7 @@ export default function Editor({ id, user }: { id: string; user: User }) {
               value={draft.tags}
               onChange={(e) => set("tags", e.target.value)}
               placeholder="Experimentation, CUPED"
-              className="w-full rounded-[9px] border border-line bg-card px-3 py-2 text-[12.5px] outline-none focus:border-ink/30"
+              className="w-full rounded-[9px] border border-line bg-card px-3 py-2 text-[16px] xl:text-[12.5px] outline-none focus:border-ink/30"
             />
             <p className="mt-1.5 text-[11px] text-grey">
               The first one shows in the breadcrumb.
@@ -495,7 +543,7 @@ export default function Editor({ id, user }: { id: string; user: User }) {
               value={draft.canonicalUrl}
               onChange={(e) => set("canonicalUrl", e.target.value)}
               placeholder="Leave empty — this is the original"
-              className="w-full rounded-[9px] border border-line bg-card px-3 py-2 text-[12px] outline-none focus:border-ink/30"
+              className="w-full rounded-[9px] border border-line bg-card px-3 py-2 text-[16px] xl:text-[12px] outline-none focus:border-ink/30"
             />
           </Field>
 
@@ -523,6 +571,7 @@ export default function Editor({ id, user }: { id: string; user: User }) {
               Delete this piece
             </button>
           ) : null}
+          </div>
         </aside>
       </div>
     </div>

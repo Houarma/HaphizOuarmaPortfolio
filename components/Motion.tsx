@@ -15,12 +15,58 @@ const useIsoLayoutEffect =
 
 const EASE = "power3.out";
 
+type Radii = { rx: number; ry: number };
+
+/**
+ * The ring around the contact lamp is sized from its own frame, so it reaches
+ * to the edge of a wide column and tucks in on a phone rather than pushing the
+ * page sideways.
+ */
+const ringRadii = (frame: Element | null): Radii => {
+  const width = frame ? frame.getBoundingClientRect().width : 0;
+  const rx = Math.min(352, width * 0.42);
+  return { rx, ry: rx * 0.245 };
+};
+
+/** Puts every dot where its angle says it should be, spun by `turn` radians. */
+const placeOrbit = (dots: HTMLElement[], radii: Radii, turn = 0) => {
+  for (const dot of dots) {
+    const base = (Number(dot.dataset.a) * Math.PI) / 180;
+    const ring = Number(dot.dataset.ring ?? 1);
+    const angle = base + turn * Number(dot.dataset.dir ?? 1);
+    // Screen y grows downward, so the near side of the ring — the half that
+    // clears the panel — is where sine is negative.
+    const near = Math.max(0, -Math.sin(angle));
+    gsap.set(dot, {
+      x: Math.cos(angle) * radii.rx * ring,
+      y: Math.sin(angle) * radii.ry * ring,
+      opacity: 0.18 + 0.82 * near,
+      scale: 0.72 + 0.38 * near,
+    });
+  }
+};
+
 /**
  * Every animation on the page lives here. Components stay server-rendered and
  * only carry data-anim hooks; this reads them once the page is mounted.
  */
 export default function Motion() {
   useIsoLayoutEffect(() => {
+    // The ring is an arrangement before it is an animation: place it whether or
+    // not the reader has asked for motion, and re-place it when the column
+    // changes width.
+    const ringFrame = document.querySelector("[data-anim='card-ring']");
+    const dots = gsap.utils.toArray<HTMLElement>("[data-orbit]");
+    let radii = ringRadii(ringFrame);
+    const layoutRing = () => {
+      radii = ringRadii(ringFrame);
+      placeOrbit(dots, radii);
+    };
+    if (dots.length) {
+      layoutRing();
+      window.addEventListener("resize", layoutRing);
+    }
+
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -437,26 +483,75 @@ export default function Motion() {
 
       // --- the lamp behind the contact panel ---------------------------------
       const glow = document.querySelector("[data-anim='card-glow']");
-      const rim = document.querySelector("[data-anim='card-rim']");
-      if (glow && rim) {
-        gsap.set([glow, rim], { opacity: 0.3 });
+      const core = document.querySelector("[data-anim='card-core']");
+      const rims = gsap.utils.toArray<HTMLElement>("[data-anim='card-rim']");
+      const sweep = document.querySelector("[data-anim='card-sweep']");
+      const orbit = gsap.utils.toArray<HTMLElement>("[data-orbit]");
+      const sparks = gsap.utils.toArray<HTMLElement>("[data-spark]");
+
+      if (glow) {
+        // Everything below hangs off one trigger, so the whole fixture sleeps
+        // while the panel is off screen.
+        const lit = {
+          trigger: glow,
+          start: "top 98%",
+          end: "bottom top",
+          toggleActions: "play pause resume pause",
+        } as const;
+
+        gsap.set([glow, core, ...rims], { opacity: 0.5 });
 
         gsap
-          .timeline({
-            repeat: -1,
-            repeatDelay: 1.6,
-            scrollTrigger: {
-              trigger: glow,
-              start: "top 96%",
-              end: "bottom top",
-              toggleActions: "play pause resume pause",
-            },
-          })
+          .timeline({ repeat: -1, repeatDelay: 1.4, scrollTrigger: lit })
           // It builds slowly, the way a signal gathers, then lets go.
-          .to(glow, { opacity: 1, scaleX: 1.07, duration: 2.2, ease: "power2.in" }, 0)
-          .to(rim, { opacity: 1, duration: 2.2, ease: "power2.in" }, 0)
-          .to(glow, { opacity: 0.3, scaleX: 1, duration: 1.5, ease: "power2.out" }, 2.2)
-          .to(rim, { opacity: 0.3, duration: 1.5, ease: "power2.out" }, 2.2);
+          .to(glow, { opacity: 1, scaleX: 1.06, duration: 2.2, ease: "power2.in" }, 0)
+          .to(core, { opacity: 1, scaleX: 1.1, duration: 2.2, ease: "power2.in" }, 0)
+          .to(rims, { opacity: 1, duration: 2.2, ease: "power2.in" }, 0)
+          .to(glow, { opacity: 0.5, scaleX: 1, duration: 1.5, ease: "power2.out" }, 2.2)
+          .to(core, { opacity: 0.5, scaleX: 1, duration: 1.5, ease: "power2.out" }, 2.2)
+          .to(rims, { opacity: 0.5, duration: 1.5, ease: "power2.out" }, 2.2);
+
+        // A highlight runs the length of the filament, off the clock of the
+        // pulse above so the two never look mechanical together.
+        if (sweep) {
+          gsap.set(sweep, { xPercent: -140 });
+          gsap.to(sweep, {
+            xPercent: 560,
+            duration: 2.6,
+            ease: "power1.inOut",
+            repeat: -1,
+            repeatDelay: 3.1,
+            scrollTrigger: lit,
+          });
+        }
+
+        // The dots go round. One proxy angle drives every dot, so the ring
+        // costs a single tween however many are on it.
+        if (orbit.length) {
+          const spin = { a: 0 };
+          gsap.to(spin, {
+            a: Math.PI * 2,
+            duration: 27,
+            ease: "none",
+            repeat: -1,
+            scrollTrigger: lit,
+            onUpdate: () => placeOrbit(orbit, radii, spin.a),
+          });
+        }
+
+        if (sparks.length) {
+          gsap.to(sparks, {
+            opacity: (i, el: HTMLElement) =>
+              Math.min(1, Number(el.style.opacity || 0.3) * 2.3),
+            scale: 1.35,
+            duration: 1.9,
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true,
+            stagger: { each: 0.24, from: "random" },
+            scrollTrigger: lit,
+          });
+        }
       }
 
       // --- the footer arrives on a bounce ------------------------------------
@@ -536,7 +631,10 @@ export default function Motion() {
       };
     });
 
-    return () => mm.revert();
+    return () => {
+      window.removeEventListener("resize", layoutRing);
+      mm.revert();
+    };
   }, []);
 
   return null;
