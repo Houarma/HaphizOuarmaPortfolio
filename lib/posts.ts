@@ -41,7 +41,12 @@ const shape = (id: string, data: Record<string, unknown>): Post => ({
   body: String(data.body ?? ""),
   cover: (data.cover as string) || undefined,
   coverAlt: (data.coverAlt as string) || undefined,
-  tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
+  // Every other field is coerced; the array was only checked for being an
+  // array, so a single non-string element would have reached the page as
+  // "[object Object]" in the breadcrumb, the chips and the "Filed under" line.
+  tags: Array.isArray(data.tags)
+    ? data.tags.map((tag) => String(tag)).filter(Boolean)
+    : [],
   status: (data.status as PostStatus) ?? "draft",
   publishedAt: asIso(data.publishedAt),
   updatedAt: asIso(data.updatedAt),
