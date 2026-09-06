@@ -20,19 +20,29 @@ export const site = {
   description:
     "AI and data engineer, founder of Horizon's. I build software for African markets and study controlled experiments, causal inference and machine learning.",
 
+  // These become schema.org `knowsAbout`: the subjects this person has
+  // knowledge of. Names belong in `name` and `alternateName`, and the country
+  // in `nationality` — listing either here would say something false about
+  // what is known, and read as keyword stuffing. Machine learning, AI and
+  // computer science lead, because that is the recognition being sought.
   keywords: [
-    "Haphiz Ouarma",
-    "Ouarma Haphiz",
-    "AI engineer",
-    "data engineer",
+    "artificial intelligence",
     "machine learning",
     "deep learning",
+    "computer science",
+    "neural networks",
+    "computer vision",
+    "natural language processing",
+    "retrieval-augmented generation",
+    "AI engineer",
+    "data engineer",
     "online controlled experiments",
-    "A/B testing at low traffic",
+    "causal inference",
     "variance reduction",
     "CUPED",
-    "causal inference",
     "experimentation platform",
+    "econometrics",
+    "statistics",
     "system design",
     "Horizon's",
     "Horizon's Academy",
@@ -40,7 +50,6 @@ export const site = {
     "agriAI",
     "African tech ecosystem",
     "mobile money engineering",
-    "Burkina Faso",
     "ENSA Oujda",
   ],
 
