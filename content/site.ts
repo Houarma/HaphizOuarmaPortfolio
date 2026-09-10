@@ -10,7 +10,11 @@ export const site = {
   domain: "haphizouarma.com",
 
   name: "Haphiz Ouarma",
-  legalName: "Haphiz OUARMA",
+  // The administrative order used at home: family name first, in capitals.
+  // It is the true legal form, and it is the only place the reversed order
+  // appears in prose — which is what teaches a search engine that "Ouarma
+  // Haphiz" is a name and not a misspelling of something else.
+  legalName: "OUARMA Haphiz",
   role: "Engineering student, ENSA Oujda · Founder, Horizon's",
 
   // The <title> leads with the name for branded search; the description stays

@@ -100,7 +100,12 @@ const jsonLd = {
       "@type": "Person",
       "@id": PERSON,
       name: site.name,
-      alternateName: ["Ouarma Haphiz", "Haphiz OUARMA", "HAPHIZ OUARMA"],
+      alternateName: [
+        "Ouarma Haphiz",
+        "OUARMA Haphiz",
+        "Haphiz OUARMA",
+        "HAPHIZ OUARMA",
+      ],
       givenName: "Haphiz",
       familyName: "Ouarma",
       url: site.url,

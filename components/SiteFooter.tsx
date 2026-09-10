@@ -61,7 +61,7 @@ export default function SiteFooter() {
 
         <div className="flex flex-col gap-2 border-t border-white/[0.08] py-7 text-[12px] text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {year} {site.name}. All rights reserved.
+            © {year} {site.name} ({site.legalName}). All rights reserved.
           </p>
           <p>Montreal, Canada</p>
         </div>
